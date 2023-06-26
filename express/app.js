@@ -9,6 +9,8 @@ var urlsRouter = require('./routes/urls');
 var userRouter = require('./routes/users');
 
 
+app.use(express.json());
+
 app.use('/', indexRouter);
 app.use('/urls', urlsRouter);
 app.use('/user', userRouter);
