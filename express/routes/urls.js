@@ -1,9 +1,10 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient()
 const express = require('express')
-const router = express.Router()
+const router = express.Router();
+var authenticateToken = require('../Auth/Auth');
 
-router.get('/', function(req, res, next) {
+router.get('/', authenticateToken, function(req, res, next) {
   main()
   res.send("urls");
 });

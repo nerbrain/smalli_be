@@ -2,10 +2,11 @@ require('dotenv').config();
 var express = require('express');
 var router = express.Router();
 const { PrismaClient, Prisma } = require('@prisma/client');
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+
 
 
 /* GET users listing. */
@@ -43,9 +44,17 @@ async function findUser(email,password,res){
         if(user != null){
             if(await bcrypt.compare(password,user.password)){
                 console.log("Successful");
-                res.status(200).send("Successful")
-                //TODO: Implement JWT
-        }
+
+                const user = { email : email };
+                const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+                res.status(200).json({ 
+                                        status: "success",
+                                        accessToken: accessToken
+                                    });
+                //TODO : Log user sign In
+            } else{
+                res.status(401).send("Wrong email or password");
+            } 
         }else {
             console.log("Wrong Credentials");
             res.status(401).send("Wrong Credentials");
