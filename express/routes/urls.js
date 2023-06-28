@@ -3,20 +3,24 @@ const prisma = new PrismaClient();
 const express = require('express');
 const router = express.Router();
 var authenticateToken = require('../Auth/Auth');
+var scanURL = require('../utils/urlScan');
 
-router.get('/', authenticateToken, function(req, res, next) {
+router.get('/list', authenticateToken, function(req, res, next) {
   main(res)
-  
 });
 
-router.post('/generateUrl', async function(req, res, next){
+router.get('/:shortUrl', authenticateToken, function(req, res, next) {
+  find(req.params.shortUrl, res);
+});
+
+router.post('/generateUrl',scanURL, async function(req, res, next){
   var longUrl = req.body.url;
   // console.log(longUrl);
-  var shortUrl = await generateUrl(longUrl, 5);
+  var shortUrl = await generateUrl(5);
   saveUrl(shortUrl, longUrl, res);
 })
 
-async function generateUrl(longUrl, length){
+async function generateUrl(length){
   var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   var charLength = chars.length;
   var result = '';
@@ -39,6 +43,27 @@ async function saveUrl(shortUrl, longUrl, res){
     console.log(url);
     res.status(200).send(url)
   } catch (e) {
+    throw e;
+  }
+}
+
+async function find(shortUrl, res){
+  try{
+    const url = await prisma.URL.findUnique({
+      where: {
+        shortURL: shortUrl,
+      },
+    })
+
+    if(url != null){
+      console.log(url);
+      res.status(200).send(url);
+    } else {
+      console.log("Url doesn't exist");
+      res.status(401).send("Url doesn't exist");
+    }
+
+  } catch (e){
     throw e;
   }
 }
