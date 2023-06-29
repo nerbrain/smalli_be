@@ -6,18 +6,22 @@ var authenticateToken = require('../Auth/Auth');
 var scanURL = require('../utils/urlScan');
 
 router.get('/list', authenticateToken, function(req, res, next) {
-  main(res)
+  if(req.user == null){
+    return res.sendStatus(401);
+  } else{
+    main(res)
+  }
 });
 
-router.get('/:shortUrl', authenticateToken, function(req, res, next) {
+router.get('/:shortUrl', function(req, res, next) {
   find(req.params.shortUrl, res);
 });
 
-router.post('/generateUrl',scanURL, async function(req, res, next){
+router.post('/generateUrl',authenticateToken,scanURL, async function(req, res, next){
   var longUrl = req.body.url;
   // console.log(longUrl);
   var shortUrl = await generateUrl(5);
-  saveUrl(shortUrl, longUrl, res);
+  saveUrl(shortUrl, longUrl, res, req);
 })
 
 async function generateUrl(length){
@@ -31,19 +35,41 @@ async function generateUrl(length){
   return result;
 }
 
-async function saveUrl(shortUrl, longUrl, res){
-  try{
-    var url = await prisma.URL.create({
-      data:{
-        longURL: longUrl,
-        shortURL: shortUrl,
-        threatLevel: 0,
-      }
-    });
-    console.log(url);
-    res.status(200).send(url)
-  } catch (e) {
-    throw e;
+async function saveUrl(shortUrl, longUrl, res, req){
+  
+  //User does not have an account
+  if( req.user == null){
+    console.log("null")
+    try{
+      var url = await prisma.URL.create({
+        data:{
+          longURL: longUrl,
+          shortURL: shortUrl,
+          threatLevel: 0,
+        }
+      });
+      console.log(url);
+      res.status(200).send(url)
+    } catch (e) {
+      throw e;
+    }
+  } 
+  //User is a registered member
+  else {
+    try{
+      var url = await prisma.URL.create({
+        data:{
+          longURL: longUrl,
+          shortURL: shortUrl,
+          threatLevel: 0,
+          userId: req.user.userId,
+        }
+      });
+      console.log(url);
+      res.status(200).send(url)
+    } catch (e) {
+      throw e;
+    }
   }
 }
 
@@ -54,7 +80,6 @@ async function find(shortUrl, res){
         shortURL: shortUrl,
       },
     })
-
     if(url != null){
       console.log(url);
       res.status(200).send(url);
@@ -62,7 +87,6 @@ async function find(shortUrl, res){
       console.log("Url doesn't exist");
       res.status(401).send("Url doesn't exist");
     }
-
   } catch (e){
     throw e;
   }
@@ -70,7 +94,7 @@ async function find(shortUrl, res){
 
 async function main(res) {
   const urls = await prisma.URL.findMany()
-  console.log(urls);
+  // console.log(urls);
   res.send(urls);
 }
 

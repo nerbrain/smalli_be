@@ -7,8 +7,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 var bodyParser = require('body-parser');
 
-
-
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     res.sendStatus(403);
@@ -40,13 +38,15 @@ async function findUser(email,password,res){
               email: email,
             },
         });
+
+        // console.log(user);
     
         if(user != null){
             if(await bcrypt.compare(password,user.password)){
                 console.log("Successful");
 
-                const user = { email : email };
-                const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+                const userInfo = { email : email, userId: user.id };
+                const accessToken = jwt.sign(userInfo, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
                 res.status(200).json({ 
                                         status: "success",
                                         accessToken: accessToken
