@@ -21,7 +21,8 @@ var scanURL = async function(req, res, next){
             // console.log(response);
 
             if(response.unsafe == false && response.risk_score < 75 && response.dns_valid == true){
-                // console.log("safe");
+                req.threatLevel = response.risk_score;
+                req.threatScan = new Date().toISOString();
                 next()
             } else{
                 res.send("URL is Unsafe");

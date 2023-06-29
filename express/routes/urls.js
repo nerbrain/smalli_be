@@ -36,6 +36,8 @@ async function generateUrl(length){
 }
 
 async function saveUrl(shortUrl, longUrl, res, req){
+  var threatLevel = req.threatLevel;
+  var threatScan = req.threatScan;
   
   //User does not have an account
   if( req.user == null){
@@ -45,7 +47,8 @@ async function saveUrl(shortUrl, longUrl, res, req){
         data:{
           longURL: longUrl,
           shortURL: shortUrl,
-          threatLevel: 0,
+          threatLevel: threatLevel,
+          threatScan: threatScan,
         }
       });
       console.log(url);
@@ -61,7 +64,8 @@ async function saveUrl(shortUrl, longUrl, res, req){
         data:{
           longURL: longUrl,
           shortURL: shortUrl,
-          threatLevel: 0,
+          threatLevel: threatLevel,
+          threatScan: threatScan,
           userId: req.user.userId,
         }
       });
