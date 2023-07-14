@@ -1,9 +1,10 @@
+require('dotenv').config();
 const express = require('express')
 const router = express.Router()
 var prisma = require("./DB/prisma")
 const cors = require("cors");
 const app = express()
-const port = 3005
+const port = process.env.PORT
 
 var indexRouter = require('./routes/index');
 var urlsRouter = require('./routes/urls');
