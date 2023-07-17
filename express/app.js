@@ -45,8 +45,8 @@ app.use(function (err, req, res, next) {
 });
 module.exports = app;
 
-//Section 6
-app.get("/", (req, res) => {
-})
+// //Section 6
+// app.get("/", (req, res) => {
+// })
 
 app.listen(port);  
