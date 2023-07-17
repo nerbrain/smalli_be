@@ -27,7 +27,6 @@ app.use(express.json());
 
 app.use(cors())
 app.options('*', cors())
-app.use('/', indexRouter);
 app.use('/urls', urlsRouter);
 app.use('/user', userRouter);
 
