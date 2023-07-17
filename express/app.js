@@ -22,9 +22,11 @@ var userRouter = require('./routes/users');
 //   }
 // }
 // app.use(cors(corsOptions))
-app.use(cors({credentials: true, origin: true}))
+
 app.use(express.json());
 
+app.use(cors())
+app.options('*', cors())
 app.use('/', indexRouter);
 app.use('/urls', urlsRouter);
 app.use('/user', userRouter);
