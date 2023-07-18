@@ -26,7 +26,7 @@ var userRouter = require('./routes/users');
 app.use(express.json());
 
 app.use(cors())
-app.options('*', cors())
+// app.options('*', cors())
 app.use('/urls', urlsRouter);
 app.use('/user', userRouter);
 
